@@ -8,15 +8,9 @@
 // generate the random seed
 #include <inttypes.h>
 
-extern "C" {
-    void dci_query(int num_points, int intrinsic_dim, int num_query_points,
-        int num_neighbours, double* data, double* query, int* final_outputs,
-        double* final_distances);
-}
-
 dci test_master;
 
-void main_dci_query(const int num_points, const int intrinsic_dim, const int num_query_points,
+void main_dci_query(const int num_points, const int ambient_dim, const int num_query_points,
     const int num_neighbours, double* const data, double* const query, int* const final_outputs,
     double* const final_distances) {
     const int num_comp_indices = 2;
@@ -32,9 +26,11 @@ void main_dci_query(const int num_points, const int intrinsic_dim, const int num
     dci_master_query(&test_master, num_neighbours, &query_config, num_query_points, query, final_outputs, final_distances);
 }
 
-void dci_query(int num_points, int intrinsic_dim, int num_query_points,
-    int num_neighbours, double* data, double* query, int* final_outputs,
-    double* final_distances) {
-    main_dci_query(num_points, intrinsic_dim, num_query_points,
-    num_neighbours, data, query, final_outputs, final_distances);
+extern "C" {
+    void python_dci_query(int num_points, int ambient_dim, int num_query_points,
+        int num_neighbours, double* data, double* query, int* final_outputs,
+        double* final_distances) {
+        main_dci_query(num_points, ambient_dim, num_query_points,
+        num_neighbours, data, query, final_outputs, final_distances);
+    }
 }
