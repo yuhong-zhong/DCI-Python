@@ -61,8 +61,11 @@ void small_scale(const int num_points) {
     free(data);
 }
 
+int add(int a, int b) {
+  return a + b;
+}
+
 int main() {
-    srand(time(0));
-    small_scale(102400);
-    return 0;
+  printf("work");
+  return 0;
 }

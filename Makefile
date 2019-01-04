@@ -1,22 +1,21 @@
 main_files = src/util.cu src/dci.cu
-test_files = src/test/matmul_test.c src/test/random_matrix_gen.c src/test/random_normal_data_test.c src/test/test_gen_projection_vectors.c src/test/test_pipeline.c
+test_files = src/test/test_pipeline.c
 cuda_samples_dir = /usr/local/cuda-9.0/samples
 include_statements = -I include -I $(cuda_samples_dir)/common/inc/
-gpu_arch = --gpu-architecture=sm_61
+gpu_arch = --gpu-architecture=sm_61 
 python_flags = -dc -Xcompiler -fPIC
 src_files = build/util.o build/dci.o
-cuda = -lcublas
+cuda = -lcublas 
 
 all: $(main_files) $(test_files)
 	mkdir build
 	mkdir bin
-	nvcc $(main_files) $(test_files) $(include_statements) $(gpu_arch) $(cuda) -x cu -dc
+	nvcc $(main_files) $(test_files) $(include_statements) $(gpu_arch) --shared -Xcompiler -fPIC $(cuda) -x cu -dc
+	nvcc $(include_statements) $(gpu_arch) -dlink --shared -Xcompiler -fPIC util.o dci.o test_pipeline.o -o link.o
 	mv *.o build
-	nvcc $(gpu_arch) $(src_files) $(cuda)  build/matmul_test.o -o bin/matmul_test.out
-	nvcc $(gpu_arch) $(src_files) $(cuda) build/random_matrix_gen.o -o bin/random_matrix_gen.out
-	nvcc $(gpu_arch) $(src_files) $(cuda) build/random_normal_data_test.o -o bin/random_normal_data_test.out
-	nvcc $(gpu_arch) $(src_files) $(cuda) build/test_gen_projection_vectors.o -o bin/test_gen_projection_vectors.out
-	nvcc $(gpu_arch) $(src_files) $(cuda) build/test_pipeline.o -o bin/test_pipeline.out
+# nvcc $(gpu_arch) $(src_files) $(cuda) build/test_pipeline.o --shared -o bin/libtest.so
+	gcc --shared build/test_pipeline.o $(src_files) build/link.o -L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcudadevrt -o bin/libtest.so
+# nvcc $(gpu_arch) $(src_files) $(cuda) build/test_pipeline.o --shared -o bin/libtest.so
 
 clean:
 	-rm -r build bin
