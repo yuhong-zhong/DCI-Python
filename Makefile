@@ -13,7 +13,7 @@ all: $(main_files) $(c_files)
 	nvcc $(main_files) $(c_files) $(include_statements) $(gpu_arch) --shared -Xcompiler -fPIC $(cuda) -x cu -dc
 	nvcc $(include_statements) $(gpu_arch) -dlink --shared -Xcompiler -fPIC util.o dci.o interface.o -o link.o
 	mv *.o build
-	gcc --shared $(src_files) -L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcudadevrt -o bin/libtest.so
+	gcc --shared $(src_files) -L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcudadevrt -o bin/libdci.so
 
 clean:
 	-rm -r build bin
